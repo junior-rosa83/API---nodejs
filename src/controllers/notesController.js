@@ -3,7 +3,7 @@ const knex = require("../database/knex")
 class NotesController {
   async create(request, response) {
     const { tittle, description, tags, links } = request.body
-    const { user_id } = request.params
+    const user_id  = request.user.id
     
     //Pelo que eu entendi esse [note_id] é para gerar uma variavel com o id da nota.
     const [note_id] = await knex("notes").insert({
@@ -60,7 +60,8 @@ class NotesController {
   }
 
   async index(request, response) {
-    const { tittle, user_id, tags } = request.query
+    const { tittle, tags } = request.query
+    const user_id = request.user.id
     
     let notes;
 
@@ -79,6 +80,8 @@ class NotesController {
       //Por exemplo, se você tem uma lista de IDs de usuário e deseja selecionar apenas os usuários com esses IDs, você pode usar whereIn('id', [1, 2, 3]). Isso criará uma cláusula SQL que seleciona apenas as linhas onde o ID está na lista [1, 2, 3].
         .whereIn("name", filterTags)
         .innerJoin("notes", "notes.id", "tags.note_id")
+        .groupBy("notes.id")
+        .orderBy("notes.tittle")
     } else {
       notes = await knex('notes')
         .where({ user_id })
@@ -101,6 +104,5 @@ class NotesController {
     return response.json(notesWhithTags) 
   }
 }
-
 
 module.exports = NotesController
