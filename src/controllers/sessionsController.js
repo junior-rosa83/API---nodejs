@@ -15,7 +15,7 @@ class SessionsController {
     }
     
     const matchPassword = await compare(password, user.password)
-
+z
     if(!matchPassword) {
       throw new AppError('E-mail e/ou senha incorreta', 401)
     }
